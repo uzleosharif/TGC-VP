@@ -91,7 +91,7 @@ You will see on console the prints of the hello world firmware at fw/hello-world
 
   ```
 
-  src/tgc-vp -f ../fw/hello-world/prebuild/hello.elf 
+  src/tgc-vp -f ../fw/hello-world/prebuilt/hello.elf 
 
   ```
   
