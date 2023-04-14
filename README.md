@@ -64,3 +64,7 @@ To rebuild the firmware you need to install a RISC-V toolchain like https://gith
   
 ## TODO
 [ ] use etiss-sc as a git submodule instead of manual add of sources. This way the project can fetch latest updates from etiss-sc project smoothly.
+
+[ ] ETISS block-size > 1 in `system.cpp`
+
+[ ] DMI enable in ETISS
