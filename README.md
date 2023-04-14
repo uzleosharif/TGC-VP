@@ -62,3 +62,5 @@ this project replaces the default dbt-rise ISS with ETISS
   
 To rebuild the firmware you need to install a RISC-V toolchain like https://github.com/riscv/riscv-tools.
   
+## TODO
+[ ] use etiss-sc as a git submodule instead of manual add of sources. This way the project can fetch latest updates from etiss-sc project smoothly.
