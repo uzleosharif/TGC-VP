@@ -33,13 +33,13 @@ You will see on console the prints of the hello world firmware at fw/hello-world
 
 ## Quick start
 
-* you need to have a C++14 capable compiler, make, python, and cmake installed
+* you need to have a C++14 capable compiler, make, python, and cmake installed. Known to work with fresh Ubuntu 20.04.
 
 * install conan.io (see also http://docs.conan.io/en/latest/installation.html):
   
   ```
 
-  pip3 install --user conan
+  pip3 install --user conan==1.59.0
 
   ```
   
@@ -91,7 +91,7 @@ You will see on console the prints of the hello world firmware at fw/hello-world
 
   ```
 
-  src/tgc-vp -f ../fw/hello-world/prebuild/hello.elf 
+  src/tgc-vp -f ../fw/hello-world/prebuilt/hello.elf 
 
   ```
   
