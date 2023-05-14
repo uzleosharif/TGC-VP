@@ -243,6 +243,11 @@ void etiss_sc::CPU::setup() {
 
   etiss::uint64 sa = etiss::cfg().get<uint64_t>("vp.entry_point", 0x80);
   etiss_core_->reset(&sa);
+
+  auto cpu_arch{etiss::cfg().get<std::string>("arch.cpu", "")};
+  if (cpu_arch == "RISCV64") {
+    isa_64b_ = true;
+  }
 }
 
 void etiss_sc::CPU::setupDMI(uint64_t addr) {
@@ -391,6 +396,11 @@ void etiss_sc::CPU::execute() {
 void etiss_sc::CPU::transaction(
     ETISS_CPU *cpu, uint64_t addr, uint8_t *buffer, uint32_t length,
     tlm::tlm_command cmd, tlm_utils::simple_initiator_socket<CPU> &socket) {
+    if (!isa_64b_) {
+      // for 32b systems
+      addr &= 0xffffffff;
+    }
+
   auto time_offset = getTimeOffset(cpu);
   updateSystemCTime(time_offset);
 
@@ -442,6 +452,11 @@ void etiss_sc::CPU::transaction(
 uint32_t etiss_sc::CPU::dbgTransaction(
     uint64_t addr, uint8_t *buffer, uint32_t length, tlm::tlm_command cmd,
     tlm_utils::simple_initiator_socket<CPU> &socket) {
+    if (!isa_64b_) {
+      // for 32b systems
+      addr &= 0xffffffff;
+    }
+
   for (auto d : dmi_objects_) {
     if (d.get_start_address() <= addr && addr <= d.get_end_address()) {
       if (cmd == tlm::TLM_WRITE_COMMAND && d.is_write_allowed()) {
@@ -461,14 +476,7 @@ uint32_t etiss_sc::CPU::dbgTransaction(
 
   // couldn't do transaction via dmi so trying via bus
   configurePayload(addr, cmd, buffer, length);
-  // return socket->transport_dbg(payload_);
-
-  auto len{socket->transport_dbg(payload_)};
-  // std::cout << payload_.get_response_status() << "\n";
-  // std::cout << std::hex << (int)payload_.get_data_ptr()[0] << std::dec << "\n";
-  // std::cout << std::hex << (int)payload_.get_data_ptr()[1] << std::dec << "\n";
-
-  return len;
+  return socket->transport_dbg(payload_);
 }
 
 void etiss_sc::CPU::dmiAccess(uint8_t *dst, uint8_t *src, unsigned len,
