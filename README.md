@@ -7,7 +7,8 @@ Since the CoreDSL description is used to generate RTL as well as verification ar
 provides a comprehensive and consistent solution to develop processor cores.
 
 # etiss in TGC-VP
-this project replaces the default dbt-rise ISS with ETISS
+This project replaces the default dbt-rise ISS with ETISS. The ETISS core is provided as a 
+SystemC wrapper (`cpu_minres.h/cpp`) within the `etiss-sc` lib repo (found at project root).
 
 
 
