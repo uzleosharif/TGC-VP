@@ -29,6 +29,8 @@
 #include <vector>
 
 #include "etiss/ETISS.h"
+#include "etiss/IntegratedLibrary/Logger.h"
+
 #include "systemc"
 #include "tlm_utils/simple_initiator_socket.h"
 
@@ -127,6 +129,7 @@ class CPU : public ETISS_System, public sc_core::sc_module {
   std::shared_ptr<etiss::CPUCore> etiss_core_{nullptr};
   std::shared_ptr<etiss::InterruptHandler> irq_handler_{nullptr};
   std::shared_ptr<ResetTerminatePlugin> reset_terminate_handler_{nullptr};
+  std::shared_ptr<etiss::plugin::Logger> logger_{nullptr};
   std::forward_list<tlm::tlm_dmi> dmi_objects_{};
   uint64_t quantum_{0};
   tlm::tlm_generic_payload payload_{};

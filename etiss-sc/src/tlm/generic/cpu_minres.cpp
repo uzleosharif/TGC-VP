@@ -230,6 +230,9 @@ void etiss_sc::CPU::setup() {
   reset_terminate_handler_ = std::make_shared<ResetTerminatePlugin>();
   etiss_core_->addPlugin(reset_terminate_handler_);
 
+  logger_ = std::make_shared<etiss::plugin::Logger>(0x40000000, 0x40000000);
+  etiss_core_->addPlugin(logger_);
+
   if (etiss::cfg().get<bool>("etiss.log_pc", false)) {
     addPcTraceLogger(
         etiss_core_,
@@ -394,6 +397,17 @@ void etiss_sc::CPU::transaction(
   auto time_offset = getTimeOffset(cpu);
   updateSystemCTime(time_offset);
 
+  std::cout << "--------\n";
+  std::cout << std::hex << "ETISS transaction at addr = " << addr << std::dec << "\n";
+  std::cout << "cmd = " << cmd << "\n";
+  std::cout << "len = " << length << "\n";
+  std::cout << "--------\n";
+
+  if (sc_core::sc_time_stamp() > sc_core::sc_time(600, sc_core::SC_NS)) {
+    std::cout << etiss::cfg().get<int>("etiss.loglevel", 0) << "\n";
+    exit(1);
+  }
+
   // NOTE: in case we have exceeded simulation time, we are not guaranteed that
   // the bound sockets are still in scope and hence we are returning early
   static auto sim_time = sc_core::sc_time{
@@ -464,9 +478,15 @@ uint32_t etiss_sc::CPU::dbgTransaction(
   // return socket->transport_dbg(payload_);
 
   auto len{socket->transport_dbg(payload_)};
-  // std::cout << payload_.get_response_status() << "\n";
+
+  if (len == 4) {
+    std::cout << std::hex << "ETISS::transport_dbg fetching instr. at addr = " << addr << std::dec << "\n";
+  }
+  // std::cout << "len = " << len << "\n";
   // std::cout << std::hex << (int)payload_.get_data_ptr()[0] << std::dec << "\n";
   // std::cout << std::hex << (int)payload_.get_data_ptr()[1] << std::dec << "\n";
+  // std::cout << std::hex << (int)payload_.get_data_ptr()[2] << std::dec << "\n";
+  // std::cout << std::hex << (int)payload_.get_data_ptr()[3] << std::dec << "\n";
 
   return len;
 }
