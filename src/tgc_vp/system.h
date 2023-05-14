@@ -6,7 +6,7 @@
 
 #ifndef _PLATFORM_H_
 #define _PLATFORM_H_
-
+ 
 #include <scc/memory.h>
 #include <scc/router.h>
 #include <scc/utilities.h>
@@ -89,6 +89,11 @@ class system : public sc_core::sc_module {
       "s_dummy_sck_i", 16};
   sc_core::sc_vector<tlm::scc::tlm_signal_bool_opt_out> s_dummy_sck_o{
       "s_dummy_sck_o", 16};
+
+#ifdef USE_ETISS
+  // this function loads up the memory model with elf file (passed via cli)
+  void loadElfFile();
+#endif
 
  protected:
   void gen_reset();

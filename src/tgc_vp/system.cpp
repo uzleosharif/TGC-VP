@@ -6,6 +6,14 @@
 
 #include "tgc_vp/system.h"
 
+#ifdef USE_ETISS
+#include "tlm/scc/tlm_id.h"
+#include "tlm/scc/tlm_mm.h"
+#include "tlm/scc/tlm_extensions.h"
+
+#include "elfio/elfio.hpp"
+#endif
+
 namespace tgc_vp {
 using namespace sc_core;
 using namespace vpvper::sifive;
@@ -66,6 +74,9 @@ system::system(sc_core::sc_module_name nm)
   etiss_core_.setup();
   // TODO: what about clk, irqs??
   etiss_core_.data_sock_i_->bind(router.target[0]);
+
+  // loading up program memory with elf-file
+  loadElfFile();
 #endif
 
   uart1.clk_i(tlclk_s);
@@ -172,5 +183,49 @@ system::system(sc_core::sc_module_name nm)
 
   for (auto& sock : s_dummy_sck_i) sock.error_if_no_callback = false;
 }
+
+#ifdef USE_ETISS
+void system::loadElfFile() {
+  // the implementation is inspired from J.Geier(TUMEDA) version used here:
+  // https://github.com/tum-ei-eda/vrtlmod/blob/abd42379c42c6f0852c1dc338bd8e9dbf472f98b/test/benchmark/cv32e40p/sc_test.cpp#L173-L201
+
+  ELFIO::elfio elf_reader{};
+  // TODO: pass in the elf-file name using CLI arg from sc_main.cpp
+  auto load_status = elf_reader.load("/home/sharif/TGC-VP/fw/hello-world/prebuilt/hello.elf");
+  if (load_status == false) {
+    throw std::runtime_error{"ELF file not loaded properly"};
+  }
+
+  std::vector<tlm::tlm_generic_payload*> flashmems{};
+  int trans_id{0};
+  for (auto& seg : elf_reader.segments) {
+    auto seg_data{seg->get_data()};
+
+    auto trans{tlm::scc::tlm_mm<tlm::tlm_base_protocol_types, false>::get().allocate<tlm::scc::data_buffer>(seg->get_file_size())};
+    tlm::scc::setId(*trans, trans_id++);
+    trans->set_streaming_width(seg->get_file_size());
+    trans->set_byte_enable_ptr(NULL);
+    trans->set_byte_enable_length(0);
+
+    auto data{trans->get_data_ptr()};
+
+    trans->set_address(seg->get_physical_address());
+    trans->set_command(tlm::TLM_WRITE_COMMAND);
+    for (size_t i=0; i<seg->get_file_size(); ++i) {
+      data[i] = static_cast<uint8_t>(seg_data[i] & 0xff);
+    }
+    flashmems.push_back(trans);
+  }
+
+  for (auto& trans : flashmems) {
+    trans->acquire();
+    router.transport_dbg(0, *trans);
+    if (trans->get_response_status() != tlm::TLM_OK_RESPONSE) {
+      throw std::runtime_error{"ELF file not loaded properly while routing"};
+    }
+    trans->release();
+  }
+}
+#endif
 
 }  // namespace tgc_vp

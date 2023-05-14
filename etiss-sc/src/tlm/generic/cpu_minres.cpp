@@ -346,7 +346,7 @@ etiss_int32 etiss_sc::CPU::systemCallDWrite(ETISS_CPU *cpu, etiss_uint64 addr,
 etiss_int32 etiss_sc::CPU::systemCallDbgRead(etiss_uint64 addr,
                                              etiss_uint8 *buffer,
                                              etiss_uint32 length) {
-  std::cout << "dbg_read: addr = 0x" << std::hex << addr << std::dec << "\n";
+  // std::cout << "dbg_read: addr = 0x" << std::hex << addr << std::dec << "\n";
   auto response_len = dbgTransaction(addr, buffer, length,
                                      tlm::TLM_READ_COMMAND, *data_sock_i_);
 
@@ -464,9 +464,9 @@ uint32_t etiss_sc::CPU::dbgTransaction(
   // return socket->transport_dbg(payload_);
 
   auto len{socket->transport_dbg(payload_)};
-  std::cout << payload_.get_response_status() << "\n";
-  std::cout << std::hex << (int)payload_.get_data_ptr()[0] << std::dec << "\n";
-  std::cout << std::hex << (int)payload_.get_data_ptr()[1] << std::dec << "\n";
+  // std::cout << payload_.get_response_status() << "\n";
+  // std::cout << std::hex << (int)payload_.get_data_ptr()[0] << std::dec << "\n";
+  // std::cout << std::hex << (int)payload_.get_data_ptr()[1] << std::dec << "\n";
 
   return len;
 }
