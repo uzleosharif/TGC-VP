@@ -6,13 +6,7 @@ of a particular ISA + extensions. The generator approach makes it very flexible 
 Since the CoreDSL description is used to generate RTL as well as verification artifacts it 
 provides a comprehensive and consistent solution to develop processor cores.
 
-# etiss in TGC-VP
-This project replaces the default dbt-rise ISS with ETISS. The ETISS core is provided as a 
-SystemC wrapper (`cpu_minres.h/cpp`) within the `etiss-sc` lib repo (found at project root).
-
-
-
-## Quick start
+# Quick start
 
 * you need to have a C++14 capable compiler, make, python, and cmake installed. Known to work with fresh Ubuntu 20.04.
 
@@ -39,17 +33,22 @@ SystemC wrapper (`cpu_minres.h/cpp`) within the `etiss-sc` lib repo (found at pr
   conan profile create default --detect
   
   ```
-* ETISS needs to be installed as a library. We recommend installing specific commit 36902d32ae760aa3c413ca06189e6515bc28d79c of ETISS project (https://github.com/tum-ei-eda/etiss)  
+* [For ETISS mode] ETISS needs to be installed as a library. We recommend installing specific commit 36902d32ae760aa3c413ca06189e6515bc28d79c of ETISS project (https://github.com/tum-ei-eda/etiss)  
   
 * checkout source for this TGC-VP repo
 
-* start an out-of-source build:
+* start an out-of-source build using either `dbtrise` or `etiss` mode:
   
   ```
 
   cd TGC-VP
-  git checkout etiss
-  cmake -B build -S . -DCMAKE_BUILD_TYPE=Release -DETISS_PREFIX=<path to ETISS installation>
+
+  # dbtrise mode i.e. use DBT-RISE as ISS in VP
+  cmake -B build-dbtrise -S . -DCMAKE_BUILD_TYPE=Release
+
+  # etiss mode i.e. use ETISS as ISS in VP
+  cmake -B build-etiss -S . -DCMAKE_BUILD_TYPE=Release -DUSE_ETISS=ON -DETISS_PREFIX=/home/sharif/etiss/build/installed/
+
   cd build
   make -j4 tgc-vp
 
@@ -62,10 +61,3 @@ SystemC wrapper (`cpu_minres.h/cpp`) within the `etiss-sc` lib repo (found at pr
   ```
   
 To rebuild the firmware you need to install a RISC-V toolchain like https://github.com/riscv/riscv-tools.
-  
-## TODO
-[ ] use etiss-sc as a git submodule instead of manual add of sources. This way the project can fetch latest updates from etiss-sc project smoothly.
-
-[ ] ETISS block-size > 1 in `system.cpp`
-
-[ ] DMI enable in ETISS
