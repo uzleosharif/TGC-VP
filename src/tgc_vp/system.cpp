@@ -74,9 +74,6 @@ system::system(sc_core::sc_module_name nm)
   etiss_core_.setup();
   // TODO: what about clk, irqs??
   etiss_core_.data_sock_i_->bind(router.target[0]);
-
-  // loading up program memory with elf-file
-  loadElfFile();
 #endif
 
   uart1.clk_i(tlclk_s);
@@ -184,14 +181,14 @@ system::system(sc_core::sc_module_name nm)
   for (auto& sock : s_dummy_sck_i) sock.error_if_no_callback = false;
 }
 
-#ifdef USE_ETISS
-void system::loadElfFile() {
+auto system::loadElfFile(std::string elf) -> void {
+#ifdef USE_ETISS  
   // the implementation is inspired from J.Geier(TUMEDA) version used here:
   // https://github.com/tum-ei-eda/vrtlmod/blob/abd42379c42c6f0852c1dc338bd8e9dbf472f98b/test/benchmark/cv32e40p/sc_test.cpp#L173-L201
 
   ELFIO::elfio elf_reader{};
-  // TODO: pass in the elf-file name using CLI arg from sc_main.cpp
-  auto load_status = elf_reader.load("/home/sharif/TGC-VP/fw/hello-world/prebuilt/hello.elf");
+  auto load_status = elf_reader.load(elf);
+
   if (load_status == false) {
     throw std::runtime_error{"ELF file not loaded properly"};
   }
@@ -224,8 +221,8 @@ void system::loadElfFile() {
       throw std::runtime_error{"ELF file not loaded properly while routing"};
     }
     trans->release();
-  }
-}
+  }  
 #endif
+}
 
 }  // namespace tgc_vp
