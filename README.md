@@ -49,7 +49,7 @@ provides a comprehensive and consistent solution to develop processor cores.
   # etiss mode i.e. use ETISS as ISS in VP
   cmake -B build-etiss -S . -DCMAKE_BUILD_TYPE=Release -DUSE_ETISS=ON -DETISS_PREFIX=/home/sharif/etiss/build/installed/
 
-  cd build
+  cd <build>
   make -j4 tgc-vp
 
   ```
