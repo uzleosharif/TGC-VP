@@ -27,8 +27,6 @@
 #include <cci_configuration>
 #include <memory>
 
-#define USE_ETISS
-
 #ifdef USE_ETISS
 #include "etiss-sc/tlm/generic/cpu_minres.h"
 #endif
