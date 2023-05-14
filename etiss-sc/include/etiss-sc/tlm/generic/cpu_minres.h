@@ -133,6 +133,7 @@ class CPU : public ETISS_System, public sc_core::sc_module {
   enum class CPUStatus { ACTIVE, FINISHED, TERMINATED } status_{};
   int32_t etiss_status_{etiss::RETURNCODE::NOERROR};
   std::vector<uint32_t> dwrites_{};
+  bool isa_64b_{false};
 
   virtual void resetMethod();
   virtual void execute();
