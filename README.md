@@ -47,7 +47,7 @@ provides a comprehensive and consistent solution to develop processor cores.
   cmake -B build-dbtrise -S . -DCMAKE_BUILD_TYPE=Release
 
   # etiss mode i.e. use ETISS as ISS in VP
-  cmake -B build-etiss -S . -DCMAKE_BUILD_TYPE=Release -DUSE_ETISS=ON -DETISS_PREFIX=/home/sharif/etiss/build/installed/
+  cmake -B build-etiss -S . -DCMAKE_BUILD_TYPE=Release -DUSE_ETISS=ON -DETISS_PREFIX=</path/to/etiss-install>
 
   cd <build>
   make -j4 tgc-vp
